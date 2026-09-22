@@ -34,6 +34,16 @@ def load_vector_store() -> Chroma:
     )
 
 
+def load_documents_from_store(vectorstore: Chroma) -> List[Document]:
+    """Reconstruct Document objects from what's already in Chroma, so BM25
+    doesn't require re-fetching everything from GitHub on every app startup."""
+    data = vectorstore.get(include=["documents", "metadatas"])
+    return [
+        Document(page_content=content, metadata=metadata or {})
+        for content, metadata in zip(data["documents"], data["metadatas"])
+    ]
+
+
 def build_hybrid_retriever(documents: List[Document], vectorstore: Optional[Chroma] = None, k: int = 5):
     """Combine BM25 (keyword) and Chroma (semantic) retrieval into one hybrid retriever."""
     if vectorstore is None:
@@ -50,20 +60,18 @@ def build_hybrid_retriever(documents: List[Document], vectorstore: Optional[Chro
     )
 
 
+def get_full_retriever(k: int = 5):
+    """Convenience: load the persisted store and build a hybrid retriever over everything in it."""
+    vectorstore = load_vector_store()
+    documents = load_documents_from_store(vectorstore)
+    return build_hybrid_retriever(documents, vectorstore=vectorstore, k=k)
+
+
 if __name__ == "__main__":
-    from app.ingestion import ingest_all_docs
-
-    print("Ingesting sample docs...")
-    docs = ingest_all_docs(limit=10)
-
-    print(f"\nBuilding vector store with {len(docs)} chunks...")
-    vectorstore = build_vector_store(docs)
-
-    print("Building hybrid retriever...")
-    retriever = build_hybrid_retriever(docs, vectorstore=vectorstore)
+    retriever = get_full_retriever()
 
     query = "How do I use a HuggingFace agent with LangChain?"
-    print(f"\nTest query: {query}\n")
+    print(f"Query: {query}\n")
     results = retriever.invoke(query)
 
     for i, doc in enumerate(results[:3]):
