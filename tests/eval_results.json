@@ -1,0 +1,160 @@
+{
+  "timestamp": "2026-09-22T21:20:25.170639+00:00",
+  "total_questions": 15,
+  "retrieval_relevance_score": 1.0,
+  "refusal_correctness_score": 0.933,
+  "code_syntax_validity_score": 1.0,
+  "average_latency_seconds": 6.81,
+  "results": [
+    {
+      "id": "q1",
+      "question": "How do I use ChatAnthropic with LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 1.33,
+      "answer_preview": "To use **ChatAnthropic** in LangChain, import the class, create an instance with the desired model name, optionally bind any tools you need, and then call `invoke` (or `invoke`\u2011style methods) on the m"
+    },
+    {
+      "id": "q2",
+      "question": "How do I connect LangChain to a Chroma vector store?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 2.21,
+      "answer_preview": "To connect LangChain to a Chroma vector store you need to:\n\n1. **Install the integration package** \u2013 the `langchain\u2011chroma` (and its `chromadb` dependency) provides the wrapper.  \n2. **(Optional) Set "
+    },
+    {
+      "id": "q3",
+      "question": "How do I use the Tavily search tool with LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 1.93,
+      "answer_preview": "To use Tavily\u2019s search capability in LangChain you:\n\n1. **Install the integration package** \u2013 the docs note the package is `langchain\u2011tavily` (see Source\u202f4).  \n2. **Import the tool** from the package."
+    },
+    {
+      "id": "q4",
+      "question": "How do I use the Stripe tool integration in LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 1.61,
+      "answer_preview": "To use Stripe with LangChain you need to:\n\n1. **Install the external package**  \n   The Stripe integration is provided by the `stripe-agent-toolkit` package (managed by Stripe). Install it (and `langg"
+    },
+    {
+      "id": "q5",
+      "question": "How do I connect LangChain to a Neo4j vector store?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 1.53,
+      "answer_preview": "To connect LangChain to a Neo4j vector store you:\n\n1. **Install the integration package** `langchain-neo4j` (the package name is shown in the integration metadata).  \n2. **Import the Neo4jVector class"
+    },
+    {
+      "id": "q6",
+      "question": "How do I use Google Vertex AI as an LLM in LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 3.51,
+      "answer_preview": "To use Google Vertex\u202fAI as a language model in LangChain you need to install the Vertex\u202fAI integration package and then instantiate the `VertexAI` class, which provides the full LLM interface.\n\n**Step"
+    },
+    {
+      "id": "q7",
+      "question": "How do I use the HuggingFace endpoint as an LLM in LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 9.02,
+      "answer_preview": "To use a HuggingFace model as an LLM in LangChain you need to:\n\n1. **Create a Hugging\u202fFace account and obtain an API key**.  \n2. **Install the integration package**:\n\n```bash\npip install langchain-hug"
+    },
+    {
+      "id": "q8",
+      "question": "How do I load documents using Docugami with LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "1 block(s) valid",
+      "latency_seconds": 7.27,
+      "answer_preview": "To load documents from Docugami with LangChain, import the\u202f`DocugamiLoader`\u202ffrom the\u202f`docugami_langchain.document_loaders`\u202fpackage and use it as shown in the Docugami usage example.\n\n```python\nimport "
+    },
+    {
+      "id": "q9",
+      "question": "How do I integrate LangChain with SAP HANA for question answering?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "no code blocks found",
+      "latency_seconds": 12.95,
+      "answer_preview": "To integrate LangChain with SAP\u202fHANA for question\u2011answering you need to:\n\n1. **Install the integration package**  \n   ```bash\n   pip install langchain-hana\n   ```  \n   (The `langchain-hana` package pr"
+    },
+    {
+      "id": "q10",
+      "question": "How do I use Google BigQuery as a callback destination in LangChain?",
+      "retrieval_hit": true,
+      "refusal_correct": true,
+      "code_valid": true,
+      "code_note": "3 block(s) valid",
+      "latency_seconds": 28.8,
+      "answer_preview": "**Steps to use Google\u202fBigQuery as a callback destination in LangChain**\n\n1. **Install the required package**  \n   ```bash\n   pip install \"langchain-google-community[bigquery]\"\n   ```\n   *You\u2019ll also n"
+    },
+    {
+      "id": "q11",
+      "question": "What is the capital of France?",
+      "retrieval_hit": null,
+      "refusal_correct": false,
+      "code_valid": null,
+      "code_note": "not applicable",
+      "latency_seconds": 0.99,
+      "answer_preview": "Paris is the capital of France.\n\n**Sources**\n\n- https://github.com/langchain-ai/docs/blob/main/src/oss/python/integrations/chat/amazon_nova.mdx  \n- https://github.com/langchain-ai/docs/blob/main/src/o"
+    },
+    {
+      "id": "q12",
+      "question": "How do I train a custom transformer model from scratch?",
+      "retrieval_hit": null,
+      "refusal_correct": true,
+      "code_valid": null,
+      "code_note": "not applicable",
+      "latency_seconds": 0.72,
+      "answer_preview": "The provided documentation does not contain information on this topic."
+    },
+    {
+      "id": "q13",
+      "question": "What's a good recipe for chocolate chip cookies?",
+      "retrieval_hit": null,
+      "refusal_correct": true,
+      "code_valid": null,
+      "code_note": "not applicable",
+      "latency_seconds": 6.99,
+      "answer_preview": "The provided documentation does not contain information on this topic."
+    },
+    {
+      "id": "q14",
+      "question": "How do I file my taxes as a freelancer?",
+      "retrieval_hit": null,
+      "refusal_correct": true,
+      "code_valid": null,
+      "code_note": "not applicable",
+      "latency_seconds": 4.01,
+      "answer_preview": "The provided documentation does not contain information on this topic."
+    },
+    {
+      "id": "q15",
+      "question": "What's the best programming language to learn in 2026?",
+      "retrieval_hit": null,
+      "refusal_correct": true,
+      "code_valid": null,
+      "code_note": "not applicable",
+      "latency_seconds": 19.33,
+      "answer_preview": "The provided documentation does not contain information on this topic."
+    }
+  ]
+}

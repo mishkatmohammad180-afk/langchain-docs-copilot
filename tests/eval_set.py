@@ -1,0 +1,36 @@
+"""Hand-written evaluation questions for the LangChain Docs Copilot.
+Mix of answerable (docs should cover it) and deliberately out-of-scope
+questions, to test both retrieval quality and refusal correctness."""
+
+EVAL_QUESTIONS = [
+    {"id": "q1", "question": "How do I use ChatAnthropic with LangChain?",
+     "expects_answer": True, "expected_source_keyword": "anthropic", "expects_code": True},
+    {"id": "q2", "question": "How do I connect LangChain to a Chroma vector store?",
+     "expects_answer": True, "expected_source_keyword": "chroma", "expects_code": True},
+    {"id": "q3", "question": "How do I use the Tavily search tool with LangChain?",
+     "expects_answer": True, "expected_source_keyword": "tavily", "expects_code": True},
+    {"id": "q4", "question": "How do I use the Stripe tool integration in LangChain?",
+     "expects_answer": True, "expected_source_keyword": "stripe", "expects_code": True},
+    {"id": "q5", "question": "How do I connect LangChain to a Neo4j vector store?",
+     "expects_answer": True, "expected_source_keyword": "neo4j", "expects_code": True},
+    {"id": "q6", "question": "How do I use Google Vertex AI as an LLM in LangChain?",
+     "expects_answer": True, "expected_source_keyword": "vertex", "expects_code": True},
+    {"id": "q7", "question": "How do I use the HuggingFace endpoint as an LLM in LangChain?",
+     "expects_answer": True, "expected_source_keyword": "huggingface", "expects_code": True},
+    {"id": "q8", "question": "How do I load documents using Docugami with LangChain?",
+     "expects_answer": True, "expected_source_keyword": "docugami", "expects_code": True},
+    {"id": "q9", "question": "How do I integrate LangChain with SAP HANA for question answering?",
+     "expects_answer": True, "expected_source_keyword": "hana", "expects_code": True},
+    {"id": "q10", "question": "How do I use Google BigQuery as a callback destination in LangChain?",
+     "expects_answer": True, "expected_source_keyword": "bigquery", "expects_code": True},
+    {"id": "q11", "question": "What is the capital of France?",
+     "expects_answer": False, "expected_source_keyword": None, "expects_code": False},
+    {"id": "q12", "question": "How do I train a custom transformer model from scratch?",
+     "expects_answer": False, "expected_source_keyword": None, "expects_code": False},
+    {"id": "q13", "question": "What's a good recipe for chocolate chip cookies?",
+     "expects_answer": False, "expected_source_keyword": None, "expects_code": False},
+    {"id": "q14", "question": "How do I file my taxes as a freelancer?",
+     "expects_answer": False, "expected_source_keyword": None, "expects_code": False},
+    {"id": "q15", "question": "What's the best programming language to learn in 2026?",
+     "expects_answer": False, "expected_source_keyword": None, "expects_code": False},
+]

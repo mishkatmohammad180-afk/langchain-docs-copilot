@@ -5,15 +5,23 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from app.config import GROQ_API_KEY, LLM_MODEL
 
-SYSTEM_PROMPT = """You are a LangChain documentation assistant. Answer the developer's \
-question using ONLY the provided context from LangChain's official documentation.
+REFUSAL_MESSAGE = "The provided documentation does not contain information on this topic."
 
-Rules:
+SYSTEM_PROMPT = f"""You are a LangChain documentation assistant with ONE hard rule that \
+overrides everything else: NEVER answer using your own general knowledge. You may ONLY \
+use the exact information given to you in the Context section below.
+
+Before answering, silently check: does the Context actually contain information relevant \
+to this specific question? If the question is not about LangChain or software \
+development, or the Context does not address it, you MUST respond with exactly this \
+sentence and nothing else: "{REFUSAL_MESSAGE}" Do not list any sources in that case.
+
+If the Context IS relevant, answer using ONLY what it says, following these rules:
 - Give a direct, working code example when the question asks for implementation.
 - After your answer, list the sources you used, each as its exact source URL.
-- If the context doesn't contain enough information to answer confidently, say so \
-explicitly instead of guessing.
-- Do not invent function names, parameters, or imports that are not shown in the context."""
+- Do not invent function names, parameters, or imports that are not shown in the context.
+- Do not supplement with anything from your own training data, even if you are confident \
+it is correct."""
 
 _llm = None
 
@@ -49,15 +57,9 @@ def generate_answer(query: str, documents: List[Document]) -> str:
 
 
 if __name__ == "__main__":
-    from app.ingestion import ingest_all_docs
-    from app.retrieval import build_vector_store, build_hybrid_retriever
+    from app.retrieval import get_full_retriever
 
-    print("Ingesting sample docs...")
-    docs = ingest_all_docs(limit=10)
-
-    print("Building retriever...")
-    vectorstore = build_vector_store(docs)
-    retriever = build_hybrid_retriever(docs, vectorstore=vectorstore)
+    retriever = get_full_retriever()
 
     query = "How do I use a HuggingFace agent with LangChain?"
     print(f"\nQuery: {query}\n")
