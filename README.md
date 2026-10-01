@@ -1,96 +1,113 @@
 # LangChain Docs Copilot
 
-A retrieval-augmented generation (RAG) assistant that answers implementation
-questions about LangChain using LangChain's own official documentation —
-with hybrid search, grounded/cited answers, and an automated evaluation harness.
+A retrieval-augmented assistant that answers questions about the LangChain Python docs, cites the pages it used, and refuses when the docs don't cover the question.
 
-Built as a portfolio project to demonstrate production-oriented RAG
-engineering: not just "retrieve and generate," but chunking that respects
-document structure, hybrid retrieval, a hallucination guardrail, and a real
-evaluation suite that measures how well the guardrail actually holds up.
+**Live demo:** [ADD URL] · **2-minute walkthrough:** [ADD VIDEO LINK]
 
-## Features
+## What it does
 
-- **GitHub-based ingestion pipeline** — pulls markdown docs directly from
-  `langchain-ai/docs`, chunks by markdown header first (keeping sections
-  coherent) and never splits inside a code fence.
-- **Hybrid retrieval** — combines BM25 (keyword matching, strong on exact
-  API/function names) with Chroma semantic vector search via an
-  `EnsembleRetriever`, using free local embeddings (`sentence-transformers`).
-- **Grounded generation** — Groq-hosted LLM (`openai/gpt-oss-120b`), with a
-  system prompt that requires citing real source URLs and refuses to answer
-  when the retrieved context doesn't cover the question, rather than
-  inventing plausible-looking but fake API details.
-- **FastAPI backend** — `/ask` and `/health` endpoints, with the expensive
-  retriever setup done once at startup rather than per-request.
-- **Evaluation harness** — 15 hand-written questions (10 answerable, 5
-  deliberately out-of-scope) scoring retrieval relevance, refusal
-  correctness, and code syntax validity.
+- Ingests the LangChain Python docs (`langchain-ai/docs`, `src/oss/python`): 361 files, about 9,000 chunks.
+- Retrieves with a hybrid of BM25 keyword search and vector search, then generates a grounded answer with source links.
+- Declines to answer when the question falls outside the docs, instead of guessing.
+- Ships with an evaluation harness so changes can be measured, not just eyeballed.
 
-## Evaluation Results
+## Results
 
-| Metric | Score |
+Measured with the harness in `tests/` (eval set: [N] questions):
+
+| Metric | Result |
 |---|---|
-| Retrieval relevance | 100% (10/10) |
-| Refusal correctness | 93% (14/15) |
-| Code syntax validity | 100% (10/10) |
-| Average latency | ~6.8s |
+| Retrieval relevance | 100% |
+| Refusal correctness (out-of-scope questions) | 93% |
+| Code syntax validity (generated Python parses) | 100% |
+| Average latency per question | ~6.8 s |
 
-Full per-question results in `tests/eval_results.json`.
+## Architecture
 
-## Known Limitations
+[ADD DIAGRAM IMAGE]
 
-- **Refusal isn't perfect on high-confidence general knowledge.** The one
-  failing eval case asks a trivial general-knowledge question ("What is the
-  capital of France?"). The model answers from its own training instead of
-  declining, even with an explicit, first-position system prompt instruction
-  not to. This is a documented RAG failure mode (parametric vs. contextual
-  knowledge conflict) — prompting alone has a real ceiling here. The correct
-  fix is a **similarity-score gate**: check the top retrieved chunk's
-  relevance score before generation, and skip the LLM call entirely if
-  nothing relevant was found. Not yet implemented; a clear next step.
-- **Code validation checks syntax, not execution.** Verifying generated code
-  actually *runs* would mean executing arbitrary LLM output against real API
-  keys for a dozen different services — not practical or safe for this
-  project. `ast.parse` catches malformed code but not runtime errors.
-- **`langchain_community` is being deprecated upstream** (per LangChain's own
-  migration notice) — `BM25Retriever` currently lives there; a future
-  update should migrate to its standalone package once one stabilizes.
-- **Auto-refresh ingestion** (re-indexing when LangChain's docs repo gets new
-  commits) is designed but not yet automated — currently a manual
-  `python build_index.py` run.
+```
+LangChain docs (GitHub)
+        │  ingestion: header- and code-fence-aware chunking
+        ▼
+  Chroma vector store  +  BM25 index
+        │  hybrid retrieval
+        ▼
+  LLM (Groq, openai/gpt-oss-120b)  →  answer + cited sources
+        ▲
+  FastAPI  POST /ask
+```
 
-## Setup
+- **Chunking:** splits on markdown headers and keeps code fences intact, so code examples aren't cut in half.
+- **Embeddings:** `sentence-transformers/all-MiniLM-L6-v2`.
+- **Vector store:** Chroma, persisted to `data/chroma_db`.
+- **Generation:** Groq-hosted `openai/gpt-oss-120b`.
+- **API:** FastAPI. Interactive docs at `/docs`.
 
-\`\`\`bash
-python -m venv venv
-source venv/Scripts/activate  # Windows Git Bash
+## Project structure
+
+```
+app/
+  config.py       settings (models, paths, repo to ingest)
+  ingestion.py    fetches and chunks the docs
+  retrieval.py    builds the vector store, hybrid retrieval
+  generation.py   prompt + LLM call, citations, refusals
+  main.py         FastAPI app
+build_index.py    one-time script: ingest docs and build the index
+tests/
+  eval_set.py     evaluation questions
+  run_eval.py     runs the evaluation
+  eval_results.json
+Dockerfile
+```
+
+## Run it with Docker
+
+The image builds the index during `docker build` (about 7 minutes the first time), so the container starts ready to answer.
+
+```bash
+docker build -t langchain-docs-copilot .
+
+export GROQ_API_KEY=your_key_here
+docker run -p 8000:8000 -e GROQ_API_KEY langchain-docs-copilot
+```
+
+Then open `http://localhost:8000/docs` and try `POST /ask`:
+
+```bash
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "How do I create an agent in LangChain?"}'
+```
+
+The response contains an `answer` and a list of `sources`.
+
+## Run it locally
+
+```bash
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-\`\`\`
 
-Create a `.env` file with:
-\`\`\`
-GROQ_API_KEY=your_key_here
-\`\`\`
-
-Build the index (one-time, ~5-10 minutes):
-\`\`\`bash
-python build_index.py
-\`\`\`
-
-Run the API:
-\`\`\`bash
+echo "GROQ_API_KEY=your_key_here" > .env
+python build_index.py                     # one-time: builds data/chroma_db
 uvicorn app.main:app --reload
-\`\`\`
+```
 
-Interactive docs at `http://127.0.0.1:8000/docs`.
+## Run the evaluation
 
-Run the evaluation suite:
-\`\`\`bash
-python -m tests.run_eval
-\`\`\`
+```bash
+python tests/run_eval.py
+```
 
-## Tech Stack
+Results are written to `tests/eval_results.json`.
 
-Python, FastAPI, LangChain, Chroma, Groq (Llama/GPT-OSS via free tier),
-sentence-transformers, BM25.
+## Known limitations
+
+- **Loosely related sources can appear.** For "how do I create an agent", the answer was correct, but two of the three cited pages were integration pages rather than the core agent docs. Planned fix: a similarity-threshold gate and a re-ranking step so weak matches are dropped before generation.
+- **Latency of about 7 s** per question is dominated by the hosted LLM call. Streaming the response would improve perceived speed.
+- **Static index.** The docs are indexed once at build time; rerun `build_index.py` (or rebuild the image) to pick up doc updates.
+- **Docs only.** It answers from the Python docs it was given, not from the wider LangChain ecosystem.
+
+## Tech stack
+
+Python, FastAPI, LangChain, Chroma, sentence-transformers, BM25, Groq, Docker.
