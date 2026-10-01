@@ -24,19 +24,7 @@ Measured with the harness in `tests/` (eval set: [N] questions):
 
 ## Architecture
 
-[ADD DIAGRAM IMAGE]
-
-```
-LangChain docs (GitHub)
-        │  ingestion: header- and code-fence-aware chunking
-        ▼
-  Chroma vector store  +  BM25 index
-        │  hybrid retrieval
-        ▼
-  LLM (Groq, openai/gpt-oss-120b)  →  answer + cited sources
-        ▲
-  FastAPI  POST /ask
-```
+![Architecture](architecture.png)
 
 - **Chunking:** splits on markdown headers and keeps code fences intact, so code examples aren't cut in half.
 - **Embeddings:** `sentence-transformers/all-MiniLM-L6-v2`.
